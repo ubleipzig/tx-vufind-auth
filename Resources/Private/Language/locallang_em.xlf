@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0" xmlns:t3="http://typo3.org/schemas/xliff">
+	<file source-language="en" datatype="plaintext" original="messages" date="2016-10-25T20:22:32Z" product-name="vufind_auth">
+		<header/>
+		<body>
+			<trans-unit id="vufindauth.subcategory.basic" xml:space="preserve">
+				<source>Basic configuration</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.subcategory.database" xml:space="preserve">
+				<source>Database configuration</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.subcategory.cookie" xml:space="preserve">
+				<source>Cookie configuration</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.config.db.host" xml:space="preserve">
+				<source>the ip or fqdn to the database server hosting the vufind session database. Defaults to 'localhost'. Do not leave empty.</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.config.db.port" xml:space="preserve">
+				<source>the port of the database server. Defaults to 3306. Do not leave empty.</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.config.db.name" xml:space="preserve">
+				<source>the name of the database that holds the vufind session table. Defaults to 'vufind'. Do not leave empty.</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.config.db.user" xml:space="preserve">
+				<source>the database user to connect with. defaults to 'vufind'. Do not leave empty.</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.config.db.pass" xml:space="preserve">
+				<source>the password of the database user. no default. If left empty no password is used.</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.config.cookie.domain" xml:space="preserve">
+				<source>the domain name the cookie is saved as. no default. If left empty no cookie domain is set.</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.config.storage.pid" xml:space="preserve">
+				<source>the storage folder where the vufind users and groups are stored.</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.config.session.cookiename" xml:space="preserve">
+				<source>the name of the vufind session cookie. defaults to 'PHPSESSID'. There might be issues with programs sharing the same cookie name.</source>
+			</trans-unit>
+			<trans-unit id="vufindauth.config.session.lifetime" xml:space="preserve">
+				<source>the lifetime of the vufind session cookie. defaults to 3600 seconds - one hour. This should equal the session lifetime configured for vufind, see `[Session]lifetime` in your config.ini.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

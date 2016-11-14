@@ -1,0 +1,23 @@
+{
+  "name": "UBL/vufind_auth",
+  "description": "Authenticates users based on authenticated vufind session",
+  "type": "typo3-cms-extension",
+  "keywords": ["TYPO3 CMS", "Authentication"],
+  "license": ["GPL-2.0+"],
+  "homepage": "https://github.com/UBL/vufind_auth",
+  "version": "1.0.2",
+  "support": {
+    "issues": "https://github.com/UBL/vufind_auth/issues"
+  },
+  "require": {
+    "typo3/cms": ">=6.2.1,<8.0",
+    "zendframework/zend-stdlib": "^3.1"
+  },
+  "authors": [
+    {
+      "name": "Ulf Seltmann",
+      "email": "seltmann@ub.uni-leipzig.de",
+      "role": "Developer"
+    }
+  ]
+}
