@@ -2,12 +2,11 @@
   "name": "UBL/vufind_auth",
   "description": "Authenticates users based on authenticated vufind session",
   "type": "typo3-cms-extension",
-  "keywords": ["TYPO3 CMS", "Authentication"],
+  "keywords": ["TYPO3 CMS", "authentication", "vufind"],
   "license": ["GPL-2.0+"],
-  "homepage": "https://github.com/UBL/vufind_auth",
-  "version": "1.0.2",
+  "version": "0.0.1",
   "support": {
-    "issues": "https://github.com/UBL/vufind_auth/issues"
+    "issues": "https://intern.finc.info/projects/ubl-website/issues/"
   },
   "require": {
     "typo3/cms": ">=6.2.1,<8.0",
