@@ -1,5 +1,5 @@
 {
-  "name": "UBL/vufind_auth",
+  "name": "ubl/vufind-auth",
   "description": "Authenticates users based on authenticated vufind session",
   "type": "typo3-cms-extension",
   "keywords": ["TYPO3 CMS", "authentication", "vufind"],
