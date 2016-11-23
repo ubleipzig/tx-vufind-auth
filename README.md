@@ -9,10 +9,25 @@ authorized user, assuming the requirements are met.
 
 * vufind >= v2
 * typo3 >= 6.2.1
+* zendframework/zendstdlib >= 3.1
 * vufind-database is mysql
 * vufind-session is stored into database
 * typo3-installation has access to vufind-database
 * a shared cookie-domain
+
+## preparing typo3
+in order for this extension to work we need the zendframework/zend-stdlib classes available.
+therefore we require an autoloader, that loads this classes for us at 
+
+    <PATH_site>/Packages/Libraries/autoload.php
+
+the easiest way to provide this is by installing the packages with composer e.g.
+
+    COMPOSER_VENDOR_DIR="Packages/Libraries" composer require zendframework/zend-stdlib
+
+be aware that you have to manually adjust the vendor-dir within the composer.json in order to keep
+the folder for further installations.
+if you have a composer-enabled typo3-installation you might probably be fine with the defaults.
 
 ## preparing vufind
 
