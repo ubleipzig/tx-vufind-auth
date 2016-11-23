@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
+// require composers autoloader
+require_once PATH_site . 'Packages/Libraries/autoload.php';
 
 if (!defined('TYPO3_MODE')) {
     die('Access denied.');
