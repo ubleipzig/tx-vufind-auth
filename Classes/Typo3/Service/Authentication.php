@@ -70,7 +70,6 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
             $this->createOrUpdateUser();
             return true;
         } catch (\Exception $e) {
-            $this->writelog(3, $e->getCode(), 1, $e->getMessage, $e->getTrace());
             return false;
         }
     }
