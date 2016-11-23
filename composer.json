@@ -9,8 +9,7 @@
     "issues": "https://intern.finc.info/projects/ubl-website/issues/"
   },
   "require": {
-    "typo3/cms": ">=6.2.1,<8.0",
-    "zendframework/zend-stdlib": "^3.1"
+    "typo3/cms": ">=6.2.1,<8.0"
   },
   "authors": [
     {
