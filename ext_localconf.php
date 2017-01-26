@@ -3,7 +3,7 @@ const COMPOSER_AUTOLOAD_PATH = PATH_site . 'Packages/Libraries/autoload.php';
 
 if (!file_exists(COMPOSER_AUTOLOAD_PATH)) {
     $msg = t3lib_div::makeInstance('t3lib_FlashMessage', 'Make sure to install zendframework-stdlib via composer under "Packages/Libraries"', 'Composer autoload not found', t3lib_FlashMessage::WARNING);
-    t3lib_FlashMessageQueue::addMessage($msg);
+    return t3lib_FlashMessageQueue::addMessage($msg);
 } else {
     // require composers autoloader
     require_once COMPOSER_AUTOLOAD_PATH;
