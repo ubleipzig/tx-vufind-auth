@@ -11,7 +11,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 {
 	const AUTHENTICATION_SUCCEEDED = 200;
-	const AUTHENTICATION_FAILED = 0;
+	const AUTHENTICATION_FAILED = 100;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -147,7 +147,6 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 
 	/**
 	 * Authenticate a user
-	 * Return 200 if the IP is right.
 	 * This means that no more checks are needed.
 	 * Otherwise authentication may fail because we may don't have a password.
 	 *
