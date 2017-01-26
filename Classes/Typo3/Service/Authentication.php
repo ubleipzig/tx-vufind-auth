@@ -8,10 +8,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @package UBL\VufindAuth\Typo3\Service
  */
-class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
-{
+class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 	const AUTHENTICATION_SUCCEEDED = 200;
-	const AUTHENTICATION_FAILED = 100;
+	const AUTHENTICATION_FAILED = 0;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -68,10 +67,11 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 			$this->vufindSessionService->connectDb();
 			$this->createGroups();
 			$this->createOrUpdateUser();
-			return true;
 		} catch (\Exception $e) {
-			return false;
+			// do something or let it be ... for example make it aware to backend users/admins
 		}
+		// always return true since we want to provide a working service
+		return true;
 	}
 
 	protected function createOrUpdateUser() {
@@ -88,7 +88,9 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 			'last_name' => $user['lastname'],
 			'email' => (empty($user['email']) ? 'test@example.com' : $user['email']), // required! $this->getServerVar($this->extConf['mail']),
 			'name' => sprintf('%s %s', $user['firstname'], $user['lastname']), // required! $this->getServerVar($this->extConf['displayName']),
-			'usergroup' => join(', ', array_map(function($item) { return $item['uid']; }, $this->groups)),
+			'usergroup' => join(', ', array_map(function ($item) {
+				return $item['uid'];
+			}, $this->groups)),
 		);
 
 		$result = $this->db->exec_SELECTgetSingleRow('uid', 'fe_users', sprintf('pid = %d AND uid = %d', $this->storagePid, (int)$userRow['uid']));
@@ -102,12 +104,12 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 		$this->user = $this->db->exec_SELECTgetSingleRow('*', 'fe_users', sprintf('pid = %d AND uid = %d', $this->storagePid, (int)$userRow['uid']));
 	}
 
-	public function createGroups() {
+	protected function createGroups() {
 		$groups = ($this->vufindSessionService->getGroups() && count($this->vufindSessionService->getGroups()) > 0)
 			? $this->vufindSessionService->getGroups()
 			: ['vufind_users'];
 
-		$groupList = implode(', ', array_map(function($item) {
+		$groupList = implode(', ', array_map(function ($item) {
 			return $this->db->fullQuoteStr($item, 'fe_groups');
 		}, $groups));
 
@@ -115,18 +117,20 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 
 		if ($groupRows === null) $groupRows = [];
 
-		$titles = array_map(function($item) { return $item['title']; }, $groupRows);
+		$titles = array_map(function ($item) {
+			return $item['title'];
+		}, $groupRows);
 
-		$newGroups = array_filter($groups, function($item) use ($titles) {
+		$newGroups = array_filter($groups, function ($item) use ($titles) {
 			return !in_array($item, $titles);
 		});
 
 		if (count($newGroups) > 0) {
-			$result = $this->db->exec_INSERTmultipleRows('fe_groups', ['pid', 'title', 'description'], array_map(function($item) {
+			$result = $this->db->exec_INSERTmultipleRows('fe_groups', ['pid', 'title', 'description'], array_map(function ($item) {
 				return [$this->storagePid, $item, 'automatically added by VufindAuthenticationService'];
 			}, $newGroups));
 
-			$groupList = implode(', ', array_map(function($item) {
+			$groupList = implode(', ', array_map(function ($item) {
 				return $this->db->fullQuoteStr($item, 'fe_groups');
 			}, $newGroups));
 
@@ -153,9 +157,15 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 	 * @param array $user
 	 * @return integer
 	 */
-	public function authUser($user)
-	{
-		return $this->user ? self::AUTHENTICATION_SUCCEEDED : self::AUTHENTICATION_FAILED;
+	public function authUser($user) {
+		// if there is a user authenticated by another auth service (we distinguish by storageId)
+		if ($user && $user['pid'] !== $this->storagePid) return self::AUTHENTICATION_SUCCEEDED;
+
+		// if we found an authenticated user by session
+		if ($this->user) return self::AUTHENTICATION_SUCCEEDED;
+
+		// else
+		return self::AUTHENTICATION_FAILED;
 	}
 
 	/**
@@ -167,7 +177,7 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 	 */
 	public function getGroups($user, $knownGroups) {
 		$result = [];
-		foreach($this->groups as $group) {
+		foreach ($this->groups as $group) {
 			$result[$group['uid']] = $group['title'];
 		}
 
