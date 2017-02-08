@@ -57,13 +57,12 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 	 * @return bool
 	 */
 	public function init() {
+		$this->db = $GLOBALS['TYPO3_DB'];
+		if (!$this->objectManager) $this->objectManager = GeneralUtility::makeInstance('\TYPO3\CMS\ExtBase\Object\ObjectManager');
+		$extensionUtility = $this->objectManager->get('\TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
+		$this->storagePid = (int)$extensionUtility->getCurrentConfiguration('vufind_auth')['pid']['value'];
 		try {
-			$this->db = $GLOBALS['TYPO3_DB'];
-
-			if (!$this->objectManager) $this->objectManager = GeneralUtility::makeInstance('\TYPO3\CMS\ExtBase\Object\ObjectManager');
 			$this->vufindSessionService = $this->objectManager->get('UBL\VufindAuth\Domain\Service\VufindSessionService');
-			$extensionUtility = $this->objectManager->get('\TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
-			$this->storagePid = (int)$extensionUtility->getCurrentConfiguration('vufind_auth')['pid']['value'];
 			$this->vufindSessionService->connectDb();
 			$this->createGroups();
 			$this->createOrUpdateUser();
