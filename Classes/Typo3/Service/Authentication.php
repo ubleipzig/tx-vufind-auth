@@ -135,16 +135,12 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 		$this->user = $this->db->exec_SELECTgetSingleRow('*', 'fe_users', sprintf('pid = %d AND uid = %d', $this->storagePid, (int)$userRow['uid']));
 	}
 
-<<<<<<< Updated upstream
-	protected function createGroups() {
-=======
 	/**
 	 * Creates user groups
 	 *
 	 * @return void
 	 */
-	public function createGroups() {
->>>>>>> Stashed changes
+	protected function createGroups() {
 		$groups = ($this->vufindSessionService->getGroups() && count($this->vufindSessionService->getGroups()) > 0)
 			? $this->vufindSessionService->getGroups()
 			: ['vufind_users'];
@@ -191,19 +187,13 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 
 	/**
 	 * Authenticate a user
-<<<<<<< Updated upstream
-	 * This means that no more checks are needed.
-	 * Otherwise authentication may fail because we may don't have a password.
-=======
 	 * If the user is authenticated, return 200 no more checks are needed.
 	 * Otherwise authentication failed.
->>>>>>> Stashed changes
 	 *
 	 * @param array $user
 	 * @return integer
 	 */
 	public function authUser($user) {
-<<<<<<< Updated upstream
 		// if there is a user authenticated by another auth service (we distinguish by storageId)
 		if ($user && $user['pid'] !== $this->storagePid) return self::AUTHENTICATION_SUCCEEDED;
 
@@ -212,9 +202,6 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 
 		// else
 		return self::AUTHENTICATION_FAILED;
-=======
-		return $this->user ? self::AUTHENTICATION_SUCCEEDED : self::AUTHENTICATION_FAILED;
->>>>>>> Stashed changes
 	}
 
 	/**
