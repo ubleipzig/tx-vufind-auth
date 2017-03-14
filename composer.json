@@ -4,7 +4,7 @@
   "type": "typo3-cms-extension",
   "keywords": ["TYPO3 CMS", "authentication", "vufind"],
   "license": ["GPL-2.0+"],
-  "version": "0.0.1-beta",
+  "version": "1.0.0",
   "support": {
     "issues": "https://intern.finc.info/projects/ubl-website/issues/"
   },

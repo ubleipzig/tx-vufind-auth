@@ -1,58 +1,85 @@
 <?php
-namespace UBL\VufindAuth\Typo3\Service;
+/**
+ * Class Authentication
+ *
+ * Copyright (C) Leipzig University Library 2017 <info@ub.uni-leipzig.de>
+ *
+ * @author  Ulf Seltmann <seltmann@ub.uni-leipzig.de>
+ * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+namespace LeipzigUniversityLibrary\VufindAuth\Typo3\Service;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class Authentication
  *
- * @package UBL\VufindAuth\Typo3\Service
+ * @package LeipzigUniversityLibrary\VufindAuth\Typo3\Service
  */
 class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 	const AUTHENTICATION_SUCCEEDED = 200;
 	const AUTHENTICATION_FAILED = 0;
 
 	/**
+	 * The object manager
+	 *
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 * @inject (somehow not working)
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var \UBL\VufindAuth\Domain\Service\VufindSessionService
+	 * The vufind session service
+	 *
+	 * @var \LeipzigUniversityLibrary\VufindAuth\Domain\Service\VufindSessionService
 	 * @inject
 	 */
 	protected $vufindSessionService;
 
 	/**
-	 * typo3 db connection
+	 * The typo3 db connection
+	 *
 	 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
 	 */
 	protected $db;
 
 	/**
-	 * where the users and groups are stored
+	 * Where the users and groups are stored
 	 *
 	 * @var int
 	 */
 	protected $storagePid = 0;
 
 	/**
-	 * the user we fetched from the database
+	 * The user we fetched from the database
 	 *
 	 * @var array
 	 */
 	protected $user = false;
 
 	/**
-	 * the groups we fetched from the database
+	 * The groups we fetched from the database
 	 *
 	 * @var array
 	 */
 	protected $groups = [];
 
 	/**
-	 * initializes the authentication service
+	 * Initializes the authentication service
 	 *
 	 * @return bool
 	 */
@@ -62,7 +89,7 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 		$extensionUtility = $this->objectManager->get('\TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
 		$this->storagePid = (int)$extensionUtility->getCurrentConfiguration('vufind_auth')['pid']['value'];
 		try {
-			$this->vufindSessionService = $this->objectManager->get('UBL\VufindAuth\Domain\Service\VufindSessionService');
+			$this->vufindSessionService = $this->objectManager->get('LeipzigUniversityLibrary\VufindAuth\Domain\Service\VufindSessionService');
 			$this->vufindSessionService->connectDb();
 			$this->createGroups();
 			$this->createOrUpdateUser();
@@ -73,6 +100,11 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 		return true;
 	}
 
+	/**
+	 * Creates a user if not already existing or updates it
+	 *
+	 * @return void
+	 */
 	protected function createOrUpdateUser() {
 		$user = $this->vufindSessionService->getUser();
 
@@ -103,7 +135,16 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 		$this->user = $this->db->exec_SELECTgetSingleRow('*', 'fe_users', sprintf('pid = %d AND uid = %d', $this->storagePid, (int)$userRow['uid']));
 	}
 
+<<<<<<< Updated upstream
 	protected function createGroups() {
+=======
+	/**
+	 * Creates user groups
+	 *
+	 * @return void
+	 */
+	public function createGroups() {
+>>>>>>> Stashed changes
 		$groups = ($this->vufindSessionService->getGroups() && count($this->vufindSessionService->getGroups()) > 0)
 			? $this->vufindSessionService->getGroups()
 			: ['vufind_users'];
@@ -142,7 +183,7 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 	/**
 	 * Gets the user automatically
 	 *
-	 * @return bool
+	 * @return array|false
 	 */
 	public function getUser() {
 		return $this->user;
@@ -150,13 +191,19 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 
 	/**
 	 * Authenticate a user
+<<<<<<< Updated upstream
 	 * This means that no more checks are needed.
 	 * Otherwise authentication may fail because we may don't have a password.
+=======
+	 * If the user is authenticated, return 200 no more checks are needed.
+	 * Otherwise authentication failed.
+>>>>>>> Stashed changes
 	 *
 	 * @param array $user
 	 * @return integer
 	 */
 	public function authUser($user) {
+<<<<<<< Updated upstream
 		// if there is a user authenticated by another auth service (we distinguish by storageId)
 		if ($user && $user['pid'] !== $this->storagePid) return self::AUTHENTICATION_SUCCEEDED;
 
@@ -165,6 +212,9 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 
 		// else
 		return self::AUTHENTICATION_FAILED;
+=======
+		return $this->user ? self::AUTHENTICATION_SUCCEEDED : self::AUTHENTICATION_FAILED;
+>>>>>>> Stashed changes
 	}
 
 	/**
