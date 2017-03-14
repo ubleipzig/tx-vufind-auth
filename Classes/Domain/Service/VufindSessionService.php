@@ -21,12 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-namespace LeipzigUniversityLibrary\VufindAuth\Domain\Service;
+namespace LeipzigUniversityLibrary\UblVufindAuth\Domain\Service;
 
 /**
  * Class VufindSessionService
  *
- * @package LeipzigUniversityLibrary\VufindAuth\Domain\Service
+ * @package LeipzigUniversityLibrary\UblVufindAuth\Domain\Service
  */
 class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 {

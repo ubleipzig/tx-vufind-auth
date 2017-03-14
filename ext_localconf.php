@@ -19,7 +19,7 @@ if ('FE' === TYPO3_MODE) {
 }
 
 // add the Vufind Authentication Service
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService($_EXTKEY, 'auth', 'LeipzigUniversityLibrary\VufindAuth',
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService($_EXTKEY, 'auth', 'LeipzigUniversityLibrary\UblVufindAuth',
     array(
         'title' => 'Vufind Authentication',
         'description' => 'Authenticates users based on authenticated vufind session',
@@ -30,6 +30,6 @@ if ('FE' === TYPO3_MODE) {
         'os' => '',
         'exec' => '',
         'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'Classes/Typo3/Service/Authentication.php',
-        'className' => 'LeipzigUniversityLibrary\VufindAuth\Typo3\Service\Authentication',
+        'className' => 'LeipzigUniversityLibrary\UblVufindAuth\Typo3\Service\Authentication',
     )
 );

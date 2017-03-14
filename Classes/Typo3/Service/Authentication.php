@@ -21,14 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-namespace LeipzigUniversityLibrary\VufindAuth\Typo3\Service;
+namespace LeipzigUniversityLibrary\UblVufindAuth\Typo3\Service;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class Authentication
  *
- * @package LeipzigUniversityLibrary\VufindAuth\Typo3\Service
+ * @package LeipzigUniversityLibrary\UblVufindAuth\Typo3\Service
  */
 class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 	const AUTHENTICATION_SUCCEEDED = 200;
@@ -45,7 +45,7 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 	/**
 	 * The vufind session service
 	 *
-	 * @var \LeipzigUniversityLibrary\VufindAuth\Domain\Service\VufindSessionService
+	 * @var \LeipzigUniversityLibrary\UblVufindAuth\Domain\Service\VufindSessionService
 	 * @inject
 	 */
 	protected $vufindSessionService;
@@ -87,9 +87,9 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 		$this->db = $GLOBALS['TYPO3_DB'];
 		if (!$this->objectManager) $this->objectManager = GeneralUtility::makeInstance('\TYPO3\CMS\ExtBase\Object\ObjectManager');
 		$extensionUtility = $this->objectManager->get('\TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
-		$this->storagePid = (int)$extensionUtility->getCurrentConfiguration('vufind_auth')['pid']['value'];
+		$this->storagePid = (int)$extensionUtility->getCurrentConfiguration($this->info['extKey'])['pid']['value'];
 		try {
-			$this->vufindSessionService = $this->objectManager->get('LeipzigUniversityLibrary\VufindAuth\Domain\Service\VufindSessionService');
+			$this->vufindSessionService = $this->objectManager->get('LeipzigUniversityLibrary\UblVufindAuth\Domain\Service\VufindSessionService');
 			$this->vufindSessionService->connectDb();
 			$this->createGroups();
 			$this->createOrUpdateUser();
@@ -117,8 +117,8 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 			'username' => $user['cat_username'],
 			'first_name' => $user['firstname'],
 			'last_name' => $user['lastname'],
-			'email' => (empty($user['email']) ? 'test@example.com' : $user['email']), // required! $this->getServerVar($this->extConf['mail']),
-			'name' => sprintf('%s %s', $user['firstname'], $user['lastname']), // required! $this->getServerVar($this->extConf['displayName']),
+			'email' => (empty($user['email']) ? 'test@example.com' : $user['email']),
+			'name' => sprintf('%s %s', $user['firstname'], $user['lastname']),
 			'usergroup' => join(', ', array_map(function ($item) {
 				return $item['uid'];
 			}, $this->groups)),
