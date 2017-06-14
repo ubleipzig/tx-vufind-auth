@@ -21,12 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-namespace LeipzigUniversityLibrary\UblVufindAuth\Domain\Service;
+namespace Ubl\VufindAuth\Domain\Service;
 
 /**
  * Class VufindSessionService
  *
- * @package LeipzigUniversityLibrary\UblVufindAuth\Domain\Service
+ * @package Ubl\VufindAuth\Domain\Service
  */
 class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 {
@@ -129,7 +129,7 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	 * @throws \Excepion cookie was not found
 	 */
 	public function initializeObject() {
-		$config = $this->extensionUtility->getCurrentConfiguration('ubl_vufind_auth');
+		$config = $this->extensionUtility->getCurrentConfiguration('vufind_auth');
 
 		$cookie_name = $config['cookiename']['value'];
 		if (!$_COOKIE[$cookie_name]) throw new \Exception(sprintf('cookie "%s" not found or empty value', $cookie_name));

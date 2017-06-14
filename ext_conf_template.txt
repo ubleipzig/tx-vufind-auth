@@ -1,23 +1,23 @@
-# cat=storage/enable; type=int; label=LLL:EXT:ubl_vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.storage.pid
+# cat=storage/enable; type=int; label=LLL:EXT:vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.storage.pid
 pid = 1
 
-# cat=database/enable; type=string; label=LLL:EXT:ubl_vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.db.host
+# cat=database/enable; type=string; label=LLL:EXT:vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.db.host
 host = localhost
 
-# cat=database/enable; type=int; label=LLL:EXT:ubl_vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.db.port
+# cat=database/enable; type=int; label=LLL:EXT:vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.db.port
 port = 3306
 
-# cat=database/enable; type=string; label=LLL:EXT:ubl_vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.db.name
+# cat=database/enable; type=string; label=LLL:EXT:vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.db.name
 name = vufind
 
-# cat=database/enable; type=string; label=LLL:EXT:ubl_vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.db.user
+# cat=database/enable; type=string; label=LLL:EXT:vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.db.user
 user = vufind
 
-# cat=database/enable; type=password; label=LLL:EXT:ubl_vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.db.pass
+# cat=database/enable; type=password; label=LLL:EXT:vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.db.pass
 pass =
 
-# cat=session/enable; type=string; label=LLL:EXT:ubl_vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.session.cookiename
+# cat=session/enable; type=string; label=LLL:EXT:vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.session.cookiename
 cookiename = PHPSESSID
 
-# cat=session/enable; type=string; label=LLL:EXT:ubl_vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.session.lifetime
+# cat=session/enable; type=string; label=LLL:EXT:vufind_auth/Resources/Private/Language/locallang_em.xlf:vufindauth.config.session.lifetime
 lifetime = 3600
