@@ -1,21 +1,60 @@
 {
-  "name": "ubl/vufind_auth",
-  "description": "Authenticates users based on authenticated vufind session",
-  "type": "typo3-cms-extension",
-  "keywords": ["TYPO3 CMS", "authentication", "vufind"],
-  "license": ["GPL-2.0+"],
-  "version": "1.0.1",
-  "support": {
-    "issues": "https://github.com/ubleipzig/tx-vufind-auth/issues"
-  },
-  "require": {
-    "typo3/cms": ">=6.2.1,<8.0"
-  },
-  "authors": [
-    {
-      "name": "Ulf Seltmann",
-      "email": "seltmann@ub.uni-leipzig.de",
-      "role": "Developer"
-    }
-  ]
+	"name": "ubl/vufind-auth",
+	"type": "typo3-cms-extension",
+	"description": "Authenticates users based on authenticated vufind session",
+	"keywords": ["TYPO3 CMS", "authentication", "vufind"],
+	"license": ["GPL-2.0+"],
+	"version": "2.0.0",
+	"homepage": "https://github.com/ubleipzig/tx-vufind-auth",
+	"support": {
+		"issues": "https://github.com/ubleipzig/tx-vufind-auth/issues"
+	},
+	"require": {
+		"typo3/cms": "^6.2 || ^7.6 || ^8.0",
+		"zendframework/zend-stdlib": "^3.1"
+	},
+	"authors": [{
+		"name": "Ulf Seltmann",
+		"email": "seltmann@ub.uni-leipzig.de",
+		"role": "Developer"
+	}],
+	"require-dev": {
+		"namelesscoder/typo3-repository-client": "^1.2",
+		"nimut/testing-framework": "^1.0",
+		"mikey179/vfsStream": "^1.4",
+		"phpunit/phpunit": "^4.7 || ^5.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Ubl\\VufindAuth\\": "Classes"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Ubl\\VufindAuth\\Tests\\": "Tests",
+			"TYPO3\\CMS\\Core\\Tests\\": ".Build/vendor/typo3/cms/typo3/sysext/core/Tests/",
+			"TYPO3\\CMS\\Fluid\\Tests\\": ".Build/vendor/typo3/cms/typo3/sysext/fluid/Tests/"
+		}
+	},
+	"replace": {
+		"ubl_booking": "self.version",
+		"typo3-ter/ubl-booking": "self.version"
+	},
+	"config": {
+		"vendor-dir": ".Build/vendor",
+		"bin-dir": ".Build/bin"
+	},
+	"scripts": {
+		"post-autoload-dump": [
+			"mkdir -p .Build/Web/typo3conf/ext/",
+			"[ -L .Build/Web/typo3conf/ext/vufind_auth ] || ln -snvf ../../../../. .Build/Web/typo3conf/ext/vufind_auth"
+		]
+	},
+	"extra": {
+		"typo3/cms": {
+			"cms-package-dir": "{$vendor-dir}/typo3/cms",
+			"web-dir": ".Build/Web"
+		}
+	}
+
 }

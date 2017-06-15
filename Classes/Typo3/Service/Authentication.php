@@ -23,7 +23,7 @@
 
 namespace Ubl\VufindAuth\Typo3\Service;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class Authentication
@@ -38,7 +38,7 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 	 * The object manager
 	 *
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-	 * @inject (somehow not working)
+	 * @inject
 	 */
 	protected $objectManager;
 
@@ -85,8 +85,8 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 	 */
 	public function init() {
 		$this->db = $GLOBALS['TYPO3_DB'];
-		if (!$this->objectManager) $this->objectManager = GeneralUtility::makeInstance('\TYPO3\CMS\ExtBase\Object\ObjectManager');
-		$extensionUtility = $this->objectManager->get('\TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
+		if (!$this->objectManager) $this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		$extensionUtility = $this->objectManager->get('TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
 		$this->storagePid = (int)$extensionUtility->getCurrentConfiguration($this->info['extKey'])['pid']['value'];
 		try {
 			$this->vufindSessionService = $this->objectManager->get('Ubl\VufindAuth\Domain\Service\VufindSessionService');

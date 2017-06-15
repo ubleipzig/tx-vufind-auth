@@ -91,7 +91,6 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	protected function fetchSession() {
 		$sessionRow = $this->dbConnection->exec_SELECTgetSingleRow('*', 'session', sprintf('session_id = %s', $this->dbConnection->fullQuoteStr($this->getSessionId(), 'session')));
 
-
 		if (!$sessionRow || !$sessionRow['data']) throw new \Exception(sprintf('no session found for session id \'%s\'', $this->getSessionId()));
 
 		if (!$sessionRow['last_used'] || $sessionRow['last_used'] + $this->lifetime <= time()) throw new \Exception('session expired');

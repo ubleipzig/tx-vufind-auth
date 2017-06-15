@@ -4,7 +4,7 @@ $EM_CONF[$_EXTKEY] = array (
 	'title' => 'Vufind Authentication',
 	'description' => 'Authenticates users based on authenticated vufind session',
 	'category' => 'services',
-	'version' => '1.0.1',
+	'version' => '2.0.0',
 	'state' => 'stable',
 	'author' => 'Ulf Seltmann',
 	'author_email' => 'seltmann@ub.uni-leipzig.de',
@@ -18,5 +18,20 @@ $EM_CONF[$_EXTKEY] = array (
 		'suggests' => array (
 		),
 	),
+	'autoload' =>
+  array(
+    'psr-4' =>
+    array(
+      'Ubl\\VufindAuth\\' => 'Classes',
+    ),
+  ),
+  'autoload-dev' =>
+  array(
+    'psr-4' =>
+    array(
+      'Ubl\\VufindAuth\\Tests' => 'Tests',
+    ),
+  ),
+
 );
 

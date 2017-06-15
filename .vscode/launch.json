@@ -6,8 +6,8 @@
 			"type": "php",
 			"request": "launch",
 			"port": 9000,
-			"localSourceRoot": "${workspaceRoot}/../../../",
-			"serverSourceRoot": "/app"
+			"localSourceRoot": "${workspaceRoot}/",
+			"serverSourceRoot": "/app/"
 		}
 	]
 }
