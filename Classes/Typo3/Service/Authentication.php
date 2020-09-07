@@ -21,14 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-namespace LeipzigUniversityLibrary\UblVufindAuth\Typo3\Service;
+namespace Ubl\VufindAuth\Typo3\Service;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class Authentication
  *
- * @package LeipzigUniversityLibrary\UblVufindAuth\Typo3\Service
+ * @package Ubl\VufindAuth\Typo3\Service
  */
 class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 	const AUTHENTICATION_SUCCEEDED = 200;
@@ -89,7 +89,7 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
 		$extensionUtility = $this->objectManager->get('\TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
 		$this->storagePid = (int)$extensionUtility->getCurrentConfiguration($this->info['extKey'])['pid']['value'];
 		try {
-			$this->vufindSessionService = $this->objectManager->get('LeipzigUniversityLibrary\UblVufindAuth\Domain\Service\VufindSessionService');
+			$this->vufindSessionService = $this->objectManager->get('Ubl\VufindAuth\Domain\Service\VufindSessionService');
 			$this->vufindSessionService->connectDb();
 			$this->createGroups();
 			$this->createOrUpdateUser();
