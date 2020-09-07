@@ -10,7 +10,7 @@
 		"issues": "https://github.com/ubleipzig/tx-vufind-auth/issues"
 	},
 	"require": {
-		"typo3/cms": "^6.2 || ^7.6 || ^8.0"
+		"typo3/cms": "^7.6 || ^8.0"
 	},
 	"authors": [{
 		"name": "Ulf Seltmann",

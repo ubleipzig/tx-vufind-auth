@@ -23,6 +23,8 @@
 
 namespace Ubl\VufindAuth\Domain\Service;
 
+use http\Exception\InvalidArgumentException;
+
 /**
  * Class VufindSessionService
  *
@@ -86,14 +88,25 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	/**
 	 * Fetches the session from vufind session table and updates `last_used` field
 	 *
-	 * @return this
+	 * @return object this
+	 * @throws \Exception No session found for session
+	 * @throwd \Exception Session expired
 	 */
-	protected function fetchSession() {
-		$sessionRow = $this->dbConnection->exec_SELECTgetSingleRow('*', 'session', sprintf('session_id = %s', $this->dbConnection->fullQuoteStr($this->getSessionId(), 'session')));
+	protected function fetchSession()
+	{
+		$sessionRow = $this->dbConnection->exec_SELECTgetSingleRow(
+			'*', 'session', sprintf('session_id = %s', $this->dbConnection->fullQuoteStr($this->getSessionId(), 'session'))
+		);
 
-		if (!$sessionRow || !$sessionRow['data']) throw new \Exception(sprintf('no session found for session id \'%s\'', $this->getSessionId()));
+		if (!$sessionRow || !$sessionRow['data']) {
+			throw new \Exception(
+				sprintf('no session found for session id \'%s\'', $this->getSessionId())
+			);
+		}
 
-		if (!$sessionRow['last_used'] || $sessionRow['last_used'] + $this->lifetime <= time()) throw new \Exception('session expired');
+		if (!$sessionRow['last_used'] || $sessionRow['last_used'] + $this->lifetime <= time()) {
+			throw new \Exception('session expired');
+		}
 
 		session_start();
 		$currentSession = $_SESSION;
@@ -101,23 +114,33 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 		$this->session = $_SESSION;
 		$_SESSION = $currentSession;
 
-		$this->dbConnection->exec_UPDATEquery('session', sprintf('session_id = %s', $this->dbConnection->fullQuoteStr($this->getSessionId(), 'session')), ['last_used'], [time()]);
+		$this->dbConnection->exec_UPDATEquery(
+			'session',
+			sprintf('session_id = %s', $this->dbConnection->fullQuoteStr($this->getSessionId(), 'session')),
+			['last_used'],
+			[time()]
+		);
 		return $this;
 	}
 
 	/**
 	 * Fetches the user from the vufind user table
 	 *
-	 * @return this
+	 * @return object this
 	 * @throws \Exception if user stored in session was not found
 	 */
-	protected function fetchUser() {
+	protected function fetchUser()
+	{
 		$this->user = $this->dbConnection->exec_SELECTgetSingleRow(
 			'id, username, cat_username, firstname, lastname, email, created', 'user', 'id = '
 				. $this->dbConnection->fullQuoteStr($this->getSession()['Account']->userId, 'user')
 		);
 
-		if (!$this->user) throw new \Exception(sprintf('no user found for id \'%s\'', $this->getSession()['Account']->userId));
+		if (!$this->user) {
+			throw new \Exception(
+				sprintf('no user found for id \'%s\'', $this->getSession()['Account']->userId)
+			);
+		}
 		return $this;
 	}
 
@@ -125,13 +148,18 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	 * Initializes the object after creation by object manager
 	 *
 	 * @return void
-	 * @throws \Excepion cookie was not found
+	 * @throws \Exception cookie was not found
 	 */
-	public function initializeObject() {
+	public function initializeObject()
+	{
 		$config = $this->extensionUtility->getCurrentConfiguration('vufind_auth');
 
 		$cookie_name = $config['cookiename']['value'];
-		if (!$_COOKIE[$cookie_name]) throw new \Exception(sprintf('cookie "%s" not found or empty value', $cookie_name));
+		if (!$_COOKIE[$cookie_name]) {
+			throw new \Exception(
+				sprintf('cookie "%s" not found or empty value', $cookie_name)
+			);
+		}
 
 		$this->sessionId = $_COOKIE[$cookie_name];
 		$this->lifetime = (int)$config['lifetime']['value'];
@@ -148,43 +176,54 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	 * @throws \UnexpectedValueException
 	 * @return void
 	 */
-	public function connectDb() {
+	public function connectDb()
+	{
 		$this->dbConnection->connectDB();
 	}
 
 	/**
 	 * Returns the session id
 	 *
-	 * @return void
+	 * @return object $sessionId
 	 */
-	public function getSessionId() {
+	public function getSessionId()
+	{
 		return $this->sessionId;
 	}
 
 	/**
-	 * fetches the user's groups from PAIA-scope if available, otherwise sets hardcoded array ['vufind_users']
+	 * Fetches user groups from PAIA-scope if available otherwise sets hardcoded
+	 * array ['vufind_users']
 	 *
 	 * @return void
+	 * @throws \Exception
 	 */
-	protected function fetchGroups() {
-		$this->groups = $this->getSession('PAIA') && $this->getSession('PAIA')->scope ? $this->getSession('PAIA')->scope : ['vufind_users'];
+	protected function fetchGroups()
+	{
+		$this->groups = ($this->getSession('PAIA') && $this->getSession('PAIA')->scope)
+			? $this->getSession('PAIA')->scope : ['vufind_users'];
 	}
 
 	/**
-	 * Returns the user
+	 * Returns user object
 	 *
-	 * @return array
+	 * @return array $user
+	 * @throws \Exception	no user found for id
 	 */
-	public function getUser() {
-		if (!$this->user) $this->fetchUser();
+	public function getUser()
+	{
+		if (!$this->user) {
+			$this->fetchUser();
+		}
 		return $this->user;
 	}
 
 	/**
-	 * returns the session as arra yor a specific value when a key was provided
+	 * Returns the session as array or a specific value when a key was provided
 	 *
-	 * @param string [optional] $key
+	 * @param mixed $key Boolean false or session key
 	 * @return mixed
+	 * @throws \Exception
 	 */
 	public function getSession($key = false) {
 		if (!$this->session) $this->fetchSession();
@@ -203,8 +242,11 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	 *
 	 * @return array
 	 */
-	public function getGroups() {
-		if (!$this->groups) $this->fetchGroups();
+	public function getGroups()
+	{
+		if (!$this->groups) {
+			$this->fetchGroups();
+		}
 		return $this->groups;
 	}
 }

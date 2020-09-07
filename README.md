@@ -8,7 +8,7 @@ authorized user, assuming the requirements are met.
 ## Requirements
 
 * vufind >= v2
-* typo3 >= 6.2.1
+* typo3 >= 7.0.0
 * zendframework/zendstdlib >= 3.1
 * vufind-database is mysql
 * vufind-session is stored into database
@@ -24,13 +24,13 @@ therefore we require an autoloader, that loads this classes for us at
 <PATH_site>/Packages/Libraries/autoload.php
 ```
 
-the easiest way to provide this is by installing the packages with composer e.g.
+Most simply way to provide this is by installing the packages with composer e.g.
 
 ```bash
 COMPOSER_VENDOR_DIR="Packages/Libraries" composer require zendframework/zend-stdlib
 ```
 
-be aware that you have to manually adjust the vendor-dir within the composer.json in order to keep
+Be aware that you have to manually adjust the vendor-dir within the composer.json in order to keep
 the folder for further installations.
 if you have a composer-enabled typo3-installation you probably might be fine with the defaults.
 
@@ -39,11 +39,13 @@ if you have a composer-enabled typo3-installation you probably might be fine wit
 ### Database as Session Storage
 
 VuFind has a simple option to store the session-data into its own database.
-therefore one has to set the option `type` in section `Session` in the `config.ini`
+therefore one has to set the option `type` on 'Database' in section `Session` at `config.ini` and keep the session unencrypted.
 
 ```ini
 [Session]
-type                        = mysql
+type = Database
+secure = false
+
 ```
 
 ### Cookie Domain
@@ -56,9 +58,9 @@ to the shared domain value. This is done by the option `domain` in the `Cookies`
 domain = ".example.edu"
 ```
 
-## configuring the extension
+## Configuring the extension
 
-there are several config options to the extension
+It is necessary to configure _tx-vufind-auth_ at the extension manager.
 
 ### Storage
 
