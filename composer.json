@@ -4,7 +4,7 @@
 	"description": "Authenticates users based on authenticated vufind session",
 	"keywords": ["TYPO3 CMS", "authentication", "vufind"],
 	"license": ["GPL-2.0+"],
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"homepage": "https://github.com/ubleipzig/tx-vufind-auth",
 	"support": {
 		"issues": "https://github.com/ubleipzig/tx-vufind-auth/issues"
