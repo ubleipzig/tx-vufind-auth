@@ -163,11 +163,11 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 
 		$this->sessionId = $_COOKIE[$cookie_name];
 		$this->lifetime = (int)$config['lifetime']['value'];
-		$this->dbConnection->setDatabaseHost($config['host']['value']);
-		$this->dbConnection->setDatabasePort($config['port']['value']);
-		$this->dbConnection->setDatabaseName($config['name']['value']);
-		$this->dbConnection->setDatabaseUsername($config['user']['value']);
-		$this->dbConnection->setDatabasePassword($config['pass']['value']);
+		$this->dbConnection->setDatabaseHost(trim($config['host']['value']));
+		$this->dbConnection->setDatabasePort(trim($config['port']['value']));
+		$this->dbConnection->setDatabaseName(trim($config['name']['value']));
+		$this->dbConnection->setDatabaseUsername(trim($config['user']['value']));
+		$this->dbConnection->setDatabasePassword(trim($config['pass']['value']));
 	}
 
 	/**

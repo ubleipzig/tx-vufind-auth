@@ -36,6 +36,8 @@ if you have a composer-enabled typo3-installation you probably might be fine wit
 
 ## Preparing VuFind
 
+At first be aware that your Typo3 host has an access to the VuFind database. Therefor we prefer an own user with restricted rules to the VuFind tables _session_ and _user_.    
+
 ### Database as Session Storage
 
 VuFind has a simple option to store the session-data into its own database.

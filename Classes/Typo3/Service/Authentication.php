@@ -116,7 +116,7 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 
 		$user_table = $this->db_user['table'];
 
-		$userRow = array('crdate' => mktime($user['created']),
+		$userRow = ['crdate' => mktime($user['created']),
 			'tstamp' => time(),
 			'pid' => $this->storagePid,
 			'uid' => $user['username'],
@@ -128,7 +128,7 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 			'usergroup' => join(', ', array_map(function ($item) {
 				return $item['uid'];
 			}, $this->groups)),
-		);
+		];
 
 		$result = $this->db->exec_SELECTgetSingleRow(
 			'uid',

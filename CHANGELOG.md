@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.0.3](https://github.com/ubleipzig/tx-vufind-auth/tree/2.0.3)
+
+[Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.2...2.0.3)
+
+* Adds trim() to database parameters at initalizing object due to restricted possibilities to manipulate ext_conf_template.txt 
+* Fixes outdated array typology  
+
 ## [v2.0.2](https://github.com/ubleipzig/tx-vufind-auth/tree/2.0.2)
 
 [Full Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.1...2.0.2)
