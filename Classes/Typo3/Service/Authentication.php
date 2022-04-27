@@ -121,10 +121,6 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 			'pid' => $this->storagePid,
 			'uid' => $user['username'],
 			'username' => $user['cat_username'],
-			'first_name' => $user['firstname'],
-			'last_name' => $user['lastname'],
-			'email' => (empty($user['email']) ? 'test@example.com' : $user['email']),
-			'name' => sprintf('%s %s', $user['firstname'], $user['lastname']),
 			'usergroup' => join(', ', array_map(function ($item) {
 				return $item['uid'];
 			}, $this->groups)),
