@@ -1,0 +1,14 @@
+# ==============================================
+# Persistence object mapping configuration
+# ==============================================
+config.tx_extbase {
+	persistence {
+		classes {
+			Ubl\VufindAuth\Domain\Model\VufindUser {
+				mapping {
+					tableName = fe_users
+				}
+			}
+		}
+	}
+}

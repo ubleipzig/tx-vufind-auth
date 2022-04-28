@@ -1,8 +1,14 @@
 # Changelog
 
+## [v2.1.0](https://github.com/ubleipzig/tx-vufind-auth/tree/2.1.0)
+
+[Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.4...2.1.0)
+
+* Adds **VuFindAuth Cleanup cleanupFrontendUser** task to remove records from _fe_users_ table of an indicated amount of days.  
+
 ## [v2.0.4](https://github.com/ubleipzig/tx-vufind-auth/tree/2.0.4)
 
-[Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.2...2.0.3)
+[Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.3...2.0.4)
 
 * Removes writing of _first_name_, _last_name_, _name_ and _email_ at _fe_users_ table of typo3 from VuFind session. 
 

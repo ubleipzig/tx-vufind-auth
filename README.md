@@ -83,3 +83,29 @@ It is necessary to configure _tx-vufind-auth_ at the extension manager.
 
 [1]: https://typo3.org
 [2]: https://vufind.org
+
+## Command line tools
+
+### Cleanup users
+
+There is a cleanup-command on typo3's commandline interface to remove outdated user data from _fe_users_ table. 
+
+Be aware that the concept of saving users at fe_users for VuFind only depends on needs of other extensions at Typo3. Therefore calculate well between requirements of applications and data economy due to risk holding trusted personal data.
+
+Parameters:
+
+```
+--days int (Default: 60) Amount of days to keep the record of a user since last login.
+```
+
+#### Instruction for setting up at backend
+
+Go to *Scheduler->Add Task*
+* At *Class* choose **Extbase-CommandController-Task**
+* At *Frequency* specify how often and in which period scheduler task should be run. (Seconds or cronjob settings required.)  
+* At select box of *CommandController Command* choose **VuFindAuth Cleanup: cleanupFrontendUser** 
+* On next step save the task! This is important to display the form element for additional arguments of command line tool.
+* Scroll down and specify the amount of **days** to keep the record since last login of user. Default are _60_ days. 
+* Save the task again!
+
+For developing issue it is also possible to run the task on a terminal.  

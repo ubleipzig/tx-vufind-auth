@@ -8,7 +8,7 @@ if ('FE' === TYPO3_MODE) {
     $GLOBALS['TYPO3_CONF_VARS']['SVCONF']['auth']['setup']['FE_alwaysAuthUser'] = true;
 }
 
-// add the Vufind Authentication Service
+// register VuFind authentication service
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService($_EXTKEY, 'auth', 'Ubl\VufindAuth',
     [
         'title' => 'Vufind Authentication',
@@ -23,3 +23,9 @@ if ('FE' === TYPO3_MODE) {
         'className' => 'Ubl\VufindAuth\Typo3\Service\Authentication'
     ]
 );
+
+// register command line cleanup user routine
+if (TYPO3_MODE === 'BE') {
+		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][$_EXTKEY] =
+				\Ubl\VufindAuth\Command\CleanupCommandController::class;
+}
