@@ -1,5 +1,12 @@
 # Changelog
 
+## [v3.0.0](https://github.com/ubleipzig/tx-vufind-auth/tree/3.0.0)
+
+[Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.1.0...3.0.0)
+
+* Removes support for typo3 v7 and adds support for typo3 v9
+* Implements Doctrine DBAL statements for Typo3 task **VuFindAuth Cleanup cleanupFrontendUser** 
+
 ## [v2.1.0](https://github.com/ubleipzig/tx-vufind-auth/tree/2.1.0)
 
 [Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.0.4...2.1.0)

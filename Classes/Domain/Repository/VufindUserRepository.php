@@ -23,29 +23,26 @@
 
 namespace Ubl\VufindAuth\Domain\Repository;
 
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
-use TYPO3\CMS\Extbase\Persistence\QueryInterface;
-use TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface;
-use TYPO3\CMS\Styleguide\TcaDataGenerator\Exception;
+
 
 class VufindUserRepository extends FrontendUserRepository
 {
 		/**
-		 * The typo3 db connection
+		 * Get connection for table
 		 *
-		 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
+		 * @param string $tbl	Table name
+		 *
+		 * @return TYPO3\CMS\Core\Database\Connection
+		 * @access protected
 		 */
-		protected $db;
-
-		/**
-		* Initializes the repository.
-		*
-		* @return void
-		* @see \TYPO3\CMS\Extbase\Persistence\Repository::initializeObject()
-		*/
-		public function initializeObject()
+		protected function getConnectionForTable($tbl)
 		{
-				$this->db = $GLOBALS['TYPO3_DB'];
+				/** @var ConnectionPool $connectionPool */
+				return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($tbl);
 		}
 
 		/**
@@ -60,17 +57,25 @@ class VufindUserRepository extends FrontendUserRepository
 		public function findAbsenceOfUsersBeforeTime(\DateTimeInterface $time, int $pid)
 		{
 				try {
-						$res = $this->db->exec_SELECTquery(
-								'uid',
-								'fe_users',
-								'pid = '. $pid .' AND lastlogin < ' . $time->getTimestamp()
-						);
-						$results = [];
-						while ($arr =  $this->db->sql_fetch_assoc($res)) {
-							$results[] = $arr;
-						}
-						return $results;
-				} catch (Exception $e) {
+						$queryBuilder = $this->getConnectionForTable('fe_users');
+						return $queryBuilder
+								->select('uid')
+								->from('fe_users')
+								->where(
+									$queryBuilder->expr()->eq(
+											'pid',
+											$queryBuilder->createNamedParameter($pid, \PDO::PARAM_INT)
+									)
+								)
+								->andWhere(
+										$queryBuilder->expr()->lt(
+												'lastlogin',
+												$time->getTimestamp()
+										)
+								)
+								->execute()
+								->fetchAll();
+				} catch (\Exception $e) {
 						'Error while operating on database:' . $e->getMessage() . ' with SQL error:' . $this->db->sql_error();
 				}
 		}
@@ -85,19 +90,21 @@ class VufindUserRepository extends FrontendUserRepository
 		 */
 		public function removeUsersByIds(array $uids)
 		{
-				$deleteList = implode(
-						', ',
-						array_map(function ($item) {
-								return $this->db->fullQuoteStr($item, 'fe_users');
-						},
-						$uids)
-				);
 				try {
-						$this->db->exec_DELETEquery(
-								'fe_users',
-								sprintf('uid IN(%s)', $deleteList)
+						$deleteList = implode(
+								', ',
+								array_map(function ($item) {
+										return "'" . $item . "'";
+								},
+								$uids)
 						);
-						return $this->db->sql_affected_rows();
+						$queryBuilder = $this->getConnectionForTable('fe_users');
+						return $queryBuilder
+							->delete('fe_users')
+							->where(
+									$queryBuilder->expr()->in('uid', $deleteList)
+							)
+							->execute();
 				} catch (Exception $e) {
 						'Error while operating on database:' . $e->getMessage() . ' with SQL error:' . $this->db->sql_error();
 				}

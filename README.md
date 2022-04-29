@@ -8,7 +8,7 @@ authorized user, assuming the requirements are met.
 ## Requirements
 
 * vufind >= v2
-* typo3 >= 7.0.0
+* typo3 >= 8.0.0
 * zendframework/zendstdlib >= 3.1
 * vufind-database is mysql
 * vufind-session is stored into database

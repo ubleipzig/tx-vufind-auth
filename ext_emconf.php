@@ -4,14 +4,15 @@ $EM_CONF[$_EXTKEY] = [
 	'title' => 'Vufind Authentication',
 	'description' => 'Authenticates users based on authenticated vufind session',
 	'category' => 'services',
-	'version' => '2.1.0',
+	'version' => '3.0.0',
 	'state' => 'stable',
 	'author' => 'Ulf Seltmann',
 	'author_email' => 'bdd_dev@ub.uni-leipzig.de',
 	'author_company' => 'Leipzig University Library',
 	'constraints' => [
 		'depends' => [
-			'typo3' => '7.0.0-8.99.99',
+			'php' => '7.4.0-8.1.99',
+			'typo3' => '8.0.0-9.99.99',
 		],
 		'conflicts' => [
 		],

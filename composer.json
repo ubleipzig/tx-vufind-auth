@@ -4,18 +4,23 @@
 	"description": "Authenticates users based on authenticated vufind session",
 	"keywords": ["TYPO3 CMS", "authentication", "vufind"],
 	"license": ["GPL-2.0+"],
-	"version": "2.1.0",
+	"version": "3.0.0",
 	"homepage": "https://github.com/ubleipzig/tx-vufind-auth",
 	"support": {
 		"issues": "https://github.com/ubleipzig/tx-vufind-auth/issues"
 	},
 	"require": {
-		"typo3/cms": "^7.6 || ^8.0"
+		"typo3/cms": "^8.0 || ^9.0"
 	},
 	"authors": [{
-		"name": "Ulf Seltmann",
-		"email": "seltmann@ub.uni-leipzig.de",
-		"role": "Developer"
+			"name": "Leipzig University Libary",
+			"email": "info@ub.uni-leipzig.de",
+			"role": "Public service"
+		},
+		{
+			"name": "Ulf Seltmann",
+			"email": "ulf.seltmann@hmt-leipzig.de",
+			"role": "Developer"
 	}],
 	"require-dev": {
 		"namelesscoder/typo3-repository-client": "^1.2",
