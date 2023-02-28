@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.0.1](https://github.com/ubleipzig/tx-vufind-auth/tree/3.0.1)
+
+[Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/3.0.0...3.0.1)
+
+* Fixes bug at SQL update typo3 method at VufindSessionService.php 
+
 ## [v3.0.0](https://github.com/ubleipzig/tx-vufind-auth/tree/3.0.0)
 
 [Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/2.1.0...3.0.0)

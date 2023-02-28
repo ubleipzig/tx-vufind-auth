@@ -117,8 +117,7 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 		$this->dbConnection->exec_UPDATEquery(
 			'session',
 			sprintf('session_id = %s', $this->dbConnection->fullQuoteStr($this->getSessionId(), 'session')),
-			['last_used'],
-			[time()]
+			['last_used' => time()]
 		);
 		return $this;
 	}
