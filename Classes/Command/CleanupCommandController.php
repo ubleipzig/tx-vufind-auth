@@ -24,7 +24,9 @@
 namespace Ubl\VufindAuth\Command;
 
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use \TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
+
 
 
 /**
@@ -74,11 +76,17 @@ class CleanupCommandController extends CommandController
 		 */
 		public function __construct()
 		{
-				if (!$this->objectManager) {
-						$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+				if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '9.0', '<=')) {
+						if (!$this->objectManager) {
+								$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+						}
+						$extensionUtility = $this->objectManager->get('TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
+						$this->storagePid = (int)$extensionUtility->getCurrentConfiguration('vufind_auth')['pid']['value'];
+				} else {
+						$pid = (int)GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
+								->get('vufind_auth', 'pid');
+						$this->storagePid = $pid['value'];
 				}
-				$extensionUtility = $this->objectManager->get('TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
-				$this->storagePid = (int)$extensionUtility->getCurrentConfiguration('vufind_auth')['pid']['value'];
 		}
 
 		/**

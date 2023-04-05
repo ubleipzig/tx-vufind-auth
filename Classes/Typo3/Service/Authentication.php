@@ -24,6 +24,7 @@
 namespace Ubl\VufindAuth\Typo3\Service;
 
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Class Authentication
@@ -86,22 +87,29 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 	 */
 	public function init()
 	{
-		$this->db = $GLOBALS['TYPO3_DB'];
-		if (!$this->objectManager) {
-			$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-		}
-		$extensionUtility = $this->objectManager->get('TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
-		$this->storagePid = (int)$extensionUtility->getCurrentConfiguration($this->info['extKey'])['pid']['value'];
-		try {
-			$this->vufindSessionService = $this->objectManager->get('Ubl\VufindAuth\Domain\Service\VufindSessionService');
-			$this->vufindSessionService->connectDb();
-			$this->createGroups();
-			$this->createOrUpdateUser();
-		} catch (\Exception $e) {
-			// do something or let it be ... for example make it aware to backend users/admins
-		}
-		// always return true since we want to provide a working service
-		return true;
+			$this->db = $GLOBALS['TYPO3_DB'];
+			if (!$this->objectManager) {
+					$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+			}
+			if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '9.0', '<=')) {
+					$extensionUtility = $this->objectManager->get('TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
+					$this->storagePid = (int)$extensionUtility->getCurrentConfiguration($this->info['extKey'])['pid']['value'];
+			} else {
+					$pid = (int)GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
+							->get('vufind_auth', 'pid');
+					$this->storagePid = $pid['value'];
+			}
+
+			try {
+					$this->vufindSessionService = $this->objectManager->get('Ubl\VufindAuth\Domain\Service\VufindSessionService');
+					$this->vufindSessionService->connectDb();
+					$this->createGroups();
+					$this->createOrUpdateUser();
+			} catch (\Exception $e) {
+					// do something or let it be ... for example make it aware to backend users/admins
+			}
+			// always return true since we want to provide a working service
+			return true;
 	}
 
 	/**
