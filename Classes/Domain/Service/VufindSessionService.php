@@ -23,6 +23,8 @@
 
 namespace Ubl\VufindAuth\Domain\Service;
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use http\Exception\InvalidArgumentException;
 
 /**
@@ -40,16 +42,10 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	protected $dbConnection;
 
 	/**
-	 * @var \TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility
-	 * @inject
-	 */
-	protected $extensionUtility;
-
-	/**
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 * @inject
 	 */
-	protected $objectManager;
+	//protected $objectManager;
 
 	/**
 	 * the vufind session id taken from the cookie
@@ -151,13 +147,20 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	 */
 	public function initializeObject()
 	{
-		$config = $this->extensionUtility->getCurrentConfiguration('vufind_auth');
+			if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '9.0', '<=')) {
+					$configurationUtility = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
+					 	->get('TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
+					$config = $configurationUtility->getCurrentConfiguration('vufind_auth');
+			} else {
+					$config = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
+							->get('vufind_auth');
+			}
 
-		$cookie_name = $config['cookiename']['value'];
-		if (!$_COOKIE[$cookie_name]) {
-			throw new \Exception(
-				sprintf('cookie "%s" not found or empty value', $cookie_name)
-			);
+			$cookie_name = $config['cookiename']['value'];
+			if (!$_COOKIE[$cookie_name]) {
+				throw new \Exception(
+					sprintf('cookie "%s" not found or empty value', $cookie_name)
+				);
 		}
 
 		$this->sessionId = $_COOKIE[$cookie_name];

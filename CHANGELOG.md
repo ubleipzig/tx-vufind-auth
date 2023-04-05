@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.0.2](https://github.com/ubleipzig/tx-vufind-auth/tree/3.0.2)
+
+[Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/3.0.1...3.0.2)
+
+* fixes initializing extension configuration by new class _\TYPO3\CMS\Core\Configuration\ExtensionConfiguration_
+
 ## [v3.0.1](https://github.com/ubleipzig/tx-vufind-auth/tree/3.0.1)
 
 [Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/3.0.0...3.0.1)
