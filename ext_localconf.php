@@ -23,9 +23,3 @@ if ('FE' === TYPO3_MODE) {
         'className' => 'Ubl\VufindAuth\Typo3\Service\Authentication'
     ]
 );
-
-// register command line cleanup user routine
-if (TYPO3_MODE === 'BE') {
-		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][$_EXTKEY] =
-				\Ubl\VufindAuth\Command\CleanupCommandController::class;
-}

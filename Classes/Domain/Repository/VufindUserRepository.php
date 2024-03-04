@@ -1,6 +1,6 @@
 <?php
 /**
- * Class VufindSessionService
+ * Class VufindUserRepository
  *
  * Copyright (C) Leipzig University Library 2022 <info@ub.uni-leipzig.de>
  *
@@ -31,14 +31,22 @@ use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
 
 class VufindUserRepository extends FrontendUserRepository
 {
-		/**
-		 * Get connection for table
-		 *
-		 * @param string $tbl	Table name
-		 *
-		 * @return TYPO3\CMS\Core\Database\Connection
-		 * @access protected
-		 */
+	/**
+	 * Name of table
+	 *
+	 * @var string $tableName
+	 * @access protected
+	 */
+	protected $tableName = 'fe_users';
+
+	/**
+	 * Get connection for table
+	 *
+	 * @param string $tbl	Table name
+	 *
+	 * @return TYPO3\CMS\Core\Database\Connection
+	 * @access protected
+	 */
 		protected function getConnectionForTable($tbl)
 		{
 				/** @var ConnectionPool $connectionPool */
@@ -57,10 +65,10 @@ class VufindUserRepository extends FrontendUserRepository
 		public function findAbsenceOfUsersBeforeTime(\DateTimeInterface $time, int $pid)
 		{
 				try {
-						$queryBuilder = $this->getConnectionForTable('fe_users');
+						$queryBuilder = $this->getConnectionForTable($this->tableName);
 						return $queryBuilder
 								->select('uid')
-								->from('fe_users')
+								->from($this->tableName)
 								->where(
 									$queryBuilder->expr()->eq(
 											'pid',
@@ -80,6 +88,129 @@ class VufindUserRepository extends FrontendUserRepository
 				}
 		}
 
+	/**
+	 * Find users by pid and uid
+	 *
+	 * @param int $pid
+	 * param int $uid
+	 *
+	 * @return array Return array with all uids
+	 * @access public
+	 *
+	 */
+		public function findUserByPidAndUid(int $pid, int $uid)
+		{
+			try {
+				$queryBuilder = $this->getConnectionForTable($this->tableName);
+				return $queryBuilder
+					->select('*')
+					->from($this->tableName)
+					->where(
+						$queryBuilder->expr()->eq(
+							'pid',
+							$queryBuilder->createNamedParameter($pid, \PDO::PARAM_INT)
+						)
+					)
+					->andWhere(
+						$queryBuilder->expr()->eq(
+							'uid',
+							$queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)
+						)
+					)
+					->execute()
+					->getFirst();
+			} catch (\Exception $e) {
+				'Error while operating on database:' . $e->getMessage() . ' with SQL error:' . $this->db->sql_error();
+			}
+		}
+
+	/**
+	 * Find all users by pid and group titles
+	 *
+	 * @param int $pid
+	 * @param array $groups
+	 *
+	 * @return array
+	 * @access public
+	 */
+		public function findUsersByPidAndGroups(int $pid, array $groups)
+		{
+			try {
+				$groupList = $this->createCommaSeparatedList($groups);
+				$queryBuilder = $this->getConnectionForTable($this->tableName);
+				return $queryBuilder
+					->select('uid','title')
+					->from($this->tableName)
+					->where(
+						$queryBuilder->expr()->eq(
+							'pid',
+							$queryBuilder->createNamedParameter($pid, \PDO::PARAM_INT)
+						)
+					)
+					->andWhere(
+						$queryBuilder->expr()->in('title', $groupList)
+					)
+					->execute()
+					->fetchAll();
+
+			} catch (Exception $e) {
+				'Error while operating on database:' . $e->getMessage() . ' with SQL error:' . $this->db->sql_error();
+			}
+		}
+
+	/**
+	 * Insert groups in frontend user table
+	 *
+	 * @param int $pid
+	 * @param array $groups New groups which should be inserted
+	 * @param string $description Optional
+	 *
+	 * @return int Return affected rows by insert
+	 * @access public
+	 */
+	public function insertGroups(int $pid, array $groups, string $description = "")
+	{
+		try {
+			$cnt = 0;
+			$queryBuilder = $this->getConnectionForTable($this->tableName);
+			foreach ($groups as $group) {
+				$cnt +=	$queryBuilder
+						->insert($this->tableName)
+						->values([
+							'pid' => $pid,
+							'title' => $group,
+							'description' => $description,
+						])
+						->execute();
+			}
+			return $cnt;
+
+		} catch (Exception $e) {
+			'Error while operating on database:' . $e->getMessage() . ' with SQL error:' . $this->db->sql_error();
+		}
+	}
+
+	/**
+	 * Insert user in frontend user table
+	 *
+	 * @param array $userData with user data to insert
+	 *
+	 * @return int Return affected rows by insert
+	 * @access public
+	 */
+	 public function insertUser(array $userData)
+	 {
+		 try {
+			 $queryBuilder = $this->getConnectionForTable($this->tableName);
+			 return $queryBuilder
+				 ->insert($this->tableName)
+				 ->values($userData)
+				 ->execute();
+		 } catch (Exception $e) {
+			 'Error while operating on database:' . $e->getMessage() . ' with SQL error:' . $this->db->sql_error();
+		 }
+	 }
+
 		/**
 		 * Remove users by id
 		 *
@@ -91,16 +222,10 @@ class VufindUserRepository extends FrontendUserRepository
 		public function removeUsersByIds(array $uids)
 		{
 				try {
-						$deleteList = implode(
-								', ',
-								array_map(function ($item) {
-										return "'" . $item . "'";
-								},
-								$uids)
-						);
-						$queryBuilder = $this->getConnectionForTable('fe_users');
+						$deleteList = $this->createCommaSeparatedList($uids);
+						$queryBuilder = $this->getConnectionForTable($this->tableName);
 						return $queryBuilder
-							->delete('fe_users')
+							->delete($this->tableName)
 							->where(
 									$queryBuilder->expr()->in('uid', $deleteList)
 							)
@@ -109,4 +234,65 @@ class VufindUserRepository extends FrontendUserRepository
 						'Error while operating on database:' . $e->getMessage() . ' with SQL error:' . $this->db->sql_error();
 				}
 		}
+
+	/**
+	 * Updates user in frontend user table
+	 *
+	 * param array $userData Array with user data
+	 * param int $pid
+ 	 * param int $uid
+	 *
+	 * @return void
+	 * @access public
+	 */
+	public function updateUserByPidAndUid(array $userData, int $pid, int $uid)
+	{
+		try {
+			$queryBuilder = $this->getConnectionForTable($this->tableName);
+			return $queryBuilder
+				->update($this->tableName)
+				->where(
+					$queryBuilder->expr()->eq(
+						'pid',
+						$queryBuilder->createNamedParameter($pid, \PDO::PARAM_INT)
+					)
+				)
+				->andWhere(
+					$queryBuilder->expr()->eq(
+						'uid',
+						$queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)
+					)
+				)
+				->set('crdate', $userData['crdate'])
+				->set('tstamp', $userData['tstamp'])
+				->set('pid', $userData['pid'])
+				->set('uid', $userData['uid'])
+				->set('username', $userData['username'])
+				->set('usergroup', $userData['usergroup'])
+				->execute();
+
+		} catch (Exception $e) {
+			'Error while operating on database:' . $e->getMessage() . ' with SQL error:' . $this->db->sql_error();
+		}
+	}
+
+	/**
+	 * Creates comma separated quoted list for e.g. mysql queries with IN clause
+	 *
+	 * @param array $array
+	 * @return string
+	 *
+	 * @return string
+	 * @access private
+	 */
+	private function createCommaSeparatedList(array $array): string
+	{
+		return implode(
+			', ',
+			array_map(function ($item) {
+				return "'" . $item . "'";
+			},
+				$array)
+		);
+	}
 }

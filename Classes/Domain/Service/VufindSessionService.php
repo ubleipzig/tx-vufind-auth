@@ -23,34 +23,28 @@
 
 namespace Ubl\VufindAuth\Domain\Service;
 
-use \TYPO3\CMS\Core\Utility\GeneralUtility;
-use \TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use http\Exception\InvalidArgumentException;
+use Doctrine\DBAL\Connection;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class VufindSessionService
  *
  * @package Ubl\VufindAuth\Domain\Service
  */
-class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
+class VufindSessionService extends \TYPO3\CMS\Core\Database\ConnectionPool implements \TYPO3\CMS\Core\SingletonInterface
 {
 
 	/**
-	 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
-	 * @inject
+	 * @var TYPO3\CMS\Core\Database\Connection\Pool
+	 * @access protected
 	 */
 	protected $dbConnection;
-
-	/**
-	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-	 * @inject
-	 */
-	//protected $objectManager;
 
 	/**
 	 * the vufind session id taken from the cookie
 	 *
 	 * @var string
+	 * @access protected
 	 */
 	protected $sessionId;
 
@@ -58,12 +52,14 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	 * the session lifetime
 	 *
 	 * @var integer
+	 * @access protected
 	 */
 	protected $lifetime;
 	/**
 	 * hold the vufind session information if any
 	 *
 	 * @var array
+	 * @access protected
 	 */
 	protected $session;
 
@@ -71,6 +67,7 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	 * holds the vufind user row
 	 *
 	 * @var array
+	 * @access protected
 	 */
 	protected $user;
 
@@ -78,6 +75,7 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	 * holds the vufind groups
 	 *
 	 * @var array
+	 * @access protected
 	 */
 	protected $groups;
 
@@ -86,7 +84,7 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	 *
 	 * @return object this
 	 * @throws \Exception No session found for session
-	 * @throwd \Exception Session expired
+	 * @throws \Exception Session expired
 	 */
 	protected function fetchSession()
 	{
@@ -147,16 +145,14 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 	 */
 	public function initializeObject()
 	{
-			if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '9.0', '<=')) {
-					$configurationUtility = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
-					 	->get('TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility');
-					$config = $configurationUtility->getCurrentConfiguration('vufind_auth');
-			} else {
-					$config = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
-							->get('vufind_auth');
+			try {
+				$config = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
+					->get('vufind_auth');
+			} catch (\Exception $e) {
+					sprintf('no configuration loaded for vufind_auth: %s', $e->getMessage());
 			}
 
-			$cookie_name = $config['cookiename']['value'];
+			$cookie_name = $config['cookiename'];
 			if (!$_COOKIE[$cookie_name]) {
 				throw new \Exception(
 					sprintf('cookie "%s" not found or empty value', $cookie_name)
@@ -164,16 +160,21 @@ class VufindSessionService implements \TYPO3\CMS\Core\SingletonInterface
 		}
 
 		$this->sessionId = $_COOKIE[$cookie_name];
-		$this->lifetime = (int)$config['lifetime']['value'];
-		$this->dbConnection->setDatabaseHost(trim($config['host']['value']));
-		$this->dbConnection->setDatabasePort(trim($config['port']['value']));
-		$this->dbConnection->setDatabaseName(trim($config['name']['value']));
-		$this->dbConnection->setDatabaseUsername(trim($config['user']['value']));
-		$this->dbConnection->setDatabasePassword(trim($config['pass']['value']));
+		$this->lifetime = (int)$config['lifetime'];
+		$this->dbConnection = $this->getDatabaseConnection(
+			[
+				'dbname' => trim($config['name']),
+				'driver' => 'mysqli',
+				'host' => trim($config['host']),
+				'password' => trim($config['pass']),
+				'port' => trim((int)$config['port']),
+				'user' => trim($config['user'])
+			]
+		);
 	}
 
 	/**
-	 * connects to vufind session database
+	 * Connect Vufind session database
 	 * @throws \RuntimeException
 	 * @throws \UnexpectedValueException
 	 * @return void

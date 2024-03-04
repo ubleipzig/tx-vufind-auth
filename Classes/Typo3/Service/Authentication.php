@@ -24,14 +24,17 @@
 namespace Ubl\VufindAuth\Typo3\Service;
 
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Extbase\Object\ObjectManager;
 use \TYPO3\CMS\Core\Utility\VersionNumberUtility;
+use TYPO3\CMS\Extbase\Annotation as Extbase;
+use Ubl\VufindAuth\Domain\Repository\VufindUserRepository;
 
 /**
  * Class Authentication
  *
  * @package Ubl\VufindAuth\Typo3\Service
  */
-class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
+class Authentication extends \TYPO3\CMS\Core\Authentication\AbstractAuthenticationService
 {
 	const AUTHENTICATION_SUCCEEDED = 200;
 	const AUTHENTICATION_FAILED = 0;
@@ -40,7 +43,7 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 	 * The object manager
 	 *
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-	 * @inject
+	 * @Exbase\Inject
 	 */
 	protected $objectManager;
 
@@ -48,16 +51,17 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 	 * The vufind session service
 	 *
 	 * @var \Ubl\VufindAuth\Domain\Service\VufindSessionService
-	 * @inject
+	 * @Extbase\Inject
 	 */
 	protected $vufindSessionService;
 
 	/**
-	 * The typo3 db connection
+	 * frontendUserRepository
 	 *
-	 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
+	 * @var \Ubl\VuFindAuth\Domain\Repository\VufindUserRepository
+	 * @Exbase\Inject
 	 */
-	protected $db;
+		protected $frontendUserRepository;
 
 	/**
 	 * Where the users and groups are stored
@@ -81,13 +85,24 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 	protected $groups = [];
 
 	/**
+	 * Constructor initialize repositories
+	 *
+	 * @return void
+	 * @access public
+	 */
+	public function __construct()
+	{
+		$this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+		$this->frontendUserRepository = $this->objectManager->get(VufindUserRepository::class);
+	}
+
+	/**
 	 * Initializes the authentication service
 	 *
 	 * @return bool
 	 */
 	public function init()
 	{
-			$this->db = $GLOBALS['TYPO3_DB'];
 			if (!$this->objectManager) {
 					$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 			}
@@ -120,11 +135,12 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 	 */
 	protected function createOrUpdateUser()
 	{
+		// Get data from VuFind session
 		$user = $this->vufindSessionService->getUser();
 
-		$user_table = $this->db_user['table'];
-
-		$userRow = ['crdate' => mktime($user['created']),
+		// Collect data for update or insert user
+		$userData = [
+			'crdate' => mktime($user['created']),
 			'tstamp' => time(),
 			'pid' => $this->storagePid,
 			'uid' => $user['username'],
@@ -134,27 +150,27 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 			}, $this->groups)),
 		];
 
-		$result = $this->db->exec_SELECTgetSingleRow(
-			'uid',
-			'fe_users',
-			sprintf('pid = %d AND uid = %d', $this->storagePid,
-				(int)$userRow['uid'])
+		// Check if user already exists
+		$result = $this->frontendUserRepository->findUserByPidAndUid(
+			$this->storagePid,
+			(int)$user['username']
 		);
 
 		if (is_array($result) && isset($result['uid'])) {
-			$this->db->exec_UPDATEquery(
-				'fe_users',
-				sprintf('pid = %d AND uid = %d', $this->storagePid, (int)$result['uid']),
-				$userRow
+			$this->frontendUserRepository->updateUserByPidAndUid(
+				$userData,
+				$this->storagePid,
+				(int)$result['uid']
 			);
 		} else {
-			$this->db->exec_INSERTquery('fe_users', $userRow);
+			$this->frontendUserRepository->insertUser($userData);
 		}
 
-		$this->user = $this->db->exec_SELECTgetSingleRow(
-			'*',
-			'fe_users',
-			sprintf('pid = %d AND uid = %d', $this->storagePid, (int)$userRow['uid'])
+		// Get latest saved user data anew
+    // @to-do Query isn't really necessary and could be saved on by better data management
+		$this->user = $this->frontendUserRepository->findUserByPidAndUid(
+			$this->storagePid,
+			(int)$result['uid']
 		);
 	}
 
@@ -169,14 +185,9 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 			? $this->vufindSessionService->getGroups()
 			: ['vufind_users'];
 
-		$groupList = implode(', ', array_map(function ($item) {
-			return $this->db->fullQuoteStr($item, 'fe_groups');
-		}, $groups));
-
-		$groupRows = $this->db->exec_SELECTgetRows(
-			'uid, title',
-			'fe_groups',
-			sprintf('pid = %d AND title IN(%s)', $this->storagePid, $groupList)
+		$groupRows = $this->frontendUserRepository->findUsersByPidAndGroups(
+			$this->storagePid,
+			$groups
 		);
 
 		if ($groupRows === null) {
@@ -192,26 +203,15 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 		});
 
 		if (count($newGroups) > 0) {
-			$result = $this->db->exec_INSERTmultipleRows(
-				'fe_groups',
-				['pid', 'title', 'description'],
-				array_map(function ($item) {
-					return [$this->storagePid, $item, 'automatically added by VufindAuthenticationService'];
-				},
-				$newGroups)
+			$this->frontendUserRepository->insertGroups(
+				$this->storagePid,
+				$newGroups,
+				'automatically added via Vufind authentication service'
 			);
 
-			$groupList = implode(
-				', ',
-				array_map(function ($item) {
-					return $this->db->fullQuoteStr($item, 'fe_groups');
-				},
-				$newGroups)
-			);
-			$groupRows += $this->db->exec_SELECTgetRows(
-				'uid, title',
-				'fe_groups',
-				sprintf('pid = %d AND title IN(%s)', $this->storagePid, $groupList)
+			$groupRows += $this->frontendUserRepository->findUsersByPidAndGroups(
+				$this->storagePid,
+				$newGroups
 			);
 		}
 		$this->groups = $groupRows;
@@ -262,7 +262,6 @@ class Authentication extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 		foreach ($this->groups as $group) {
 			$result[$group['uid']] = $group['title'];
 		}
-
 		return $result;
 	}
 }
