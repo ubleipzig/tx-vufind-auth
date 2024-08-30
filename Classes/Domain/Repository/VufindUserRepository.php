@@ -118,7 +118,7 @@ class VufindUserRepository extends FrontendUserRepository
 						)
 					)
 					->execute()
-					->getFirst();
+					->fetch();
 			} catch (\Exception $e) {
 				'Error while operating on database:' . $e->getMessage() . ' with SQL error:' . $this->db->sql_error();
 			}

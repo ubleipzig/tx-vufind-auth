@@ -1,5 +1,14 @@
 # Changelog
 
+## [v3.2.0](https://github.com/ubleipzig/tx-vufind-auth/tree/3.2.0)
+
+[Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/3.1.0...3.2.0)
+
+* changes database queries to ConnectionPool query builder language at _VufindSessionSerivce.php_
+* fixes misleading _getFirst()_ query statement in _fetchColumn()_ at _findUserByPidAndUid()_ _VufindUserRepository_
+* fixes key for getting _storagePid_ at _Authentication.php_ 
+* removes some no longer used typo3 v8 artefacts
+
 ## [v3.1.0](https://github.com/ubleipzig/tx-vufind-auth/tree/3.1.0)
 
 [Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/3.0.2...3.1.0)

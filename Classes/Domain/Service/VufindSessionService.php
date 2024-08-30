@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Class VufindSessionService
  *
@@ -24,6 +25,8 @@
 namespace Ubl\VufindAuth\Domain\Service;
 
 use Doctrine\DBAL\Connection;
+use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -31,14 +34,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @package Ubl\VufindAuth\Domain\Service
  */
-class VufindSessionService extends \TYPO3\CMS\Core\Database\ConnectionPool implements \TYPO3\CMS\Core\SingletonInterface
+class VufindSessionService
 {
 
 	/**
 	 * @var TYPO3\CMS\Core\Database\Connection\Pool
 	 * @access protected
 	 */
-	protected $dbConnection;
+	protected $queryBuilder;
 
 	/**
 	 * the vufind session id taken from the cookie
@@ -88,9 +91,13 @@ class VufindSessionService extends \TYPO3\CMS\Core\Database\ConnectionPool imple
 	 */
 	protected function fetchSession()
 	{
-		$sessionRow = $this->dbConnection->exec_SELECTgetSingleRow(
-			'*', 'session', sprintf('session_id = %s', $this->dbConnection->fullQuoteStr($this->getSessionId(), 'session'))
-		);
+		$sessionRow = $this->queryBuilder
+			->select(
+				['*'],
+				'session',
+		    ['session_id' => $this->getSessionId()]
+			)
+			->fetch();
 
 		if (!$sessionRow || !$sessionRow['data']) {
 			throw new \Exception(
@@ -108,11 +115,13 @@ class VufindSessionService extends \TYPO3\CMS\Core\Database\ConnectionPool imple
 		$this->session = $_SESSION;
 		$_SESSION = $currentSession;
 
-		$this->dbConnection->exec_UPDATEquery(
-			'session',
-			sprintf('session_id = %s', $this->dbConnection->fullQuoteStr($this->getSessionId(), 'session')),
-			['last_used' => time()]
-		);
+		$this->queryBuilder
+			->update(
+				'session',
+				['last_used' => time()],
+				['session_id' => $this->getSessionId()]
+			);
+
 		return $this;
 	}
 
@@ -124,10 +133,11 @@ class VufindSessionService extends \TYPO3\CMS\Core\Database\ConnectionPool imple
 	 */
 	protected function fetchUser()
 	{
-		$this->user = $this->dbConnection->exec_SELECTgetSingleRow(
-			'id, username, cat_username, firstname, lastname, email, created', 'user', 'id = '
-				. $this->dbConnection->fullQuoteStr($this->getSession()['Account']->userId, 'user')
-		);
+		$this->user = $this->queryBuilder->select(
+			['id', 'username', 'cat_username', 'firstname', 'lastname', 'email', 'created'],
+			'user',
+			['id' => ($this->getSession()['Account']->userId)]
+		)->fetch();
 
 		if (!$this->user) {
 			throw new \Exception(
@@ -161,16 +171,27 @@ class VufindSessionService extends \TYPO3\CMS\Core\Database\ConnectionPool imple
 
 		$this->sessionId = $_COOKIE[$cookie_name];
 		$this->lifetime = (int)$config['lifetime'];
-		$this->dbConnection = $this->getDatabaseConnection(
+		$vufindDatabaseData =
 			[
-				'dbname' => trim($config['name']),
-				'driver' => 'mysqli',
-				'host' => trim($config['host']),
-				'password' => trim($config['pass']),
-				'port' => trim((int)$config['port']),
-				'user' => trim($config['user'])
+				'DB' => [
+				'Connections' => [
+					'VufindSession' => [
+						'charset' => 'utf8mb4',
+						'dbname' => trim($config['name']),
+						'driver' => 'mysqli',
+						'host' => trim($config['host']),
+						'password' => trim($config['pass']),
+						'port' => (int)trim($config['port']),
+						'user' => trim($config['user'])
+					]
+				],
+				'TableMapping' => [
+					'session' => 'VufindSession'
+			  ]
 			]
-		);
+		];
+		$this->updateGlobalDatabaseConfiguration($vufindDatabaseData);
+		$this->queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('session');
 	}
 
 	/**
@@ -181,7 +202,7 @@ class VufindSessionService extends \TYPO3\CMS\Core\Database\ConnectionPool imple
 	 */
 	public function connectDb()
 	{
-		$this->dbConnection->connectDB();
+		$this->queryBuilder;
 	}
 
 	/**
@@ -251,5 +272,22 @@ class VufindSessionService extends \TYPO3\CMS\Core\Database\ConnectionPool imple
 			$this->fetchGroups();
 		}
 		return $this->groups;
+	}
+
+	/**
+	 * Override local configuration with new values.
+	 *
+	 * @param array $vufindDatabaseData Override configuration array
+	 *
+	 * @return void
+	 * @access private
+	 */
+	private function updateGlobalDatabaseConfiguration(array $vufindDatabaseData) : void
+	{
+		if (empty($vufindDatabaseData)) {
+			return;
+		}
+		$configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+		$configurationManager->updateLocalConfiguration($vufindDatabaseData);
 	}
 }
