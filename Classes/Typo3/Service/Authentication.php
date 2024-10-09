@@ -33,6 +33,7 @@ use Ubl\VufindAuth\Domain\Repository\VufindUserRepository;
  * Class Authentication
  *
  * @package Ubl\VufindAuth\Typo3\Service
+ * @to-do https://docs.typo3.org/c/typo3/cms-core/12.4/en-us/Changelog/10.0/Breaking-88646-RemovedInheritanceOfAbstractServiceFromAbstractAuthenticationService.html
  */
 class Authentication extends \TYPO3\CMS\Core\Authentication\AbstractAuthenticationService
 {
