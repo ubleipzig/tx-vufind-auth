@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.2.1](https://github.com/ubleipzig/tx-vufind-auth/tree/3.2.1)
+
+[Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/3.2.0...3.2.1)
+
+* fixes type declaration for inherited method _init()_ of _AbstractAuthenticationService_ at _Authentication.php_
+
 ## [v3.2.0](https://github.com/ubleipzig/tx-vufind-auth/tree/3.2.0)
 
 [Diff Changelog](https://github.com/ubleipzig/tx-vufind-auth/compare/3.1.0...3.2.0)

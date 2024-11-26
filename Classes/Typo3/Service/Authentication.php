@@ -102,7 +102,7 @@ class Authentication extends \TYPO3\CMS\Core\Authentication\AbstractAuthenticati
 	 *
 	 * @return bool
 	 */
-	public function init()
+	public function init(): bool
 	{
 			if (!$this->objectManager) {
 					$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');

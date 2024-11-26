@@ -8,9 +8,6 @@
 	"support": {
 		"issues": "https://github.com/ubleipzig/tx-vufind-auth/issues"
 	},
-	"require": {
-		"typo3/cms": "^8.0 || ^9.0"
-	},
 	"authors": [{
 			"name": "Leipzig University Libary",
 			"email": "info@ub.uni-leipzig.de",
@@ -21,6 +18,9 @@
 			"email": "ulf.seltmann@hmt-leipzig.de",
 			"role": "Developer"
 	}],
+	"require": {
+		"typo3/cms": "^9.5 || ^10.0"
+	},
 	"require-dev": {
 		"namelesscoder/typo3-repository-client": "^1.2",
 		"nimut/testing-framework": "^1.0",
@@ -52,8 +52,8 @@
 	"extra": {
 		"typo3/cms": {
 			"cms-package-dir": "{$vendor-dir}/typo3/cms",
-			"web-dir": ".Build/Web"
+			"web-dir": ".Build/Web",
+			"extension-key": "vufind_auth"
 		}
 	}
-
 }
